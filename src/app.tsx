@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
+import NavBar from './components/NavBar/NavBar';
 import { useAuth } from './contexts/authContext';
+import { TimeFrameContextProvider } from './contexts/TimeFrameContext';
 import Login from './pages/login';
 import Home from './pages/home';
 import Events from './pages/events';
@@ -9,27 +11,26 @@ import Events from './pages/events';
 const App: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
-  // Monitor changes to isAuthenticated
-  useEffect(() => {
-    console.log('Authentication state changed:', isAuthenticated);
-    // You can perform additional actions here if needed
-  }, [isAuthenticated]); // Dependency array ensures this runs whenever isAuthenticated changes
+  useEffect(() => {}, [isAuthenticated]);
 
   return (
     <Router>
-      <Routes>
-        {!isAuthenticated ? (
-          <>
-            <Route path="/login" element={<Login />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </>
-        ) : (
-          <>
+      {isAuthenticated && <NavBar />}
+      {!isAuthenticated ? (
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      ) : (
+        <TimeFrameContextProvider>
+          <Routes>
             <Route path="/home" element={<Home />} />
             <Route path="/events" element={<Events />} />
-          </>
-        )}
-      </Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </Routes>
+        </TimeFrameContextProvider>
+      )}
     </Router>
   );
 };
