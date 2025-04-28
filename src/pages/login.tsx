@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { ClipLoader } from 'react-spinners';
 
 import pageIcon from '../assets/icon.png';
 import api from '../api/axios';
-
+import { useAuth } from '../contexts/authContext';
 import { setJWT, setRefreshToken } from '../lib/auth';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [validPassword, setValidPassword] = useState(true);
+  const { login } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     api
       .post('/auth/login', {
         email: email,
@@ -19,8 +24,16 @@ const Login: React.FC = () => {
       .then((response) => {
         setJWT(response.data['access-token']);
         setRefreshToken(response.data['refresh-token']);
+        login();
+        window.location.href = '/home';
       })
-      .catch((err) => console.error('Login error:', err));
+      .catch((err) => {
+        console.error('Login error:', err);
+        setValidPassword(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -31,6 +44,11 @@ const Login: React.FC = () => {
         </div>
         <h1 className="text-2xl font-bold text-center">Login</h1>
         <form onSubmit={handleSubmit} className="grid gap-4">
+          {!validPassword && (
+            <div className="text-red-600 text-sm font-medium text-center">
+              Invalid password. Please try again.
+            </div>
+          )}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
@@ -66,8 +84,13 @@ const Login: React.FC = () => {
               email && password ? 'cursor-pointer' : 'cursor-nothing'
             }`}
           >
-            Login
+            {loading ? 'Loading...' : 'Login'}
           </button>
+          {loading && (
+            <div className="flex justify-center mt-4">
+              <ClipLoader color="#3498db" size={24} />
+            </div>
+          )}
         </form>
       </div>
     </div>
