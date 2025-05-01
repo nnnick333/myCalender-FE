@@ -1,11 +1,11 @@
 import React from 'react';
 
 import WeeklyCalender from '../components/WeeklyCalender/WeeklyCalender';
-import { useTimeFrameContext } from '../contexts/TimeFrameContext';
+import { useAuthenticatedContext } from '../contexts/AuthenticatedContext';
 
 const Home: React.FC = () => {
   const [displayType, setDisplayType] = React.useState('weekly');
-  const { timeFrame } = useTimeFrameContext();
+  const { timeFrame } = useAuthenticatedContext();
   const renderDashboard = () => {
     switch (timeFrame) {
       case 'Week':

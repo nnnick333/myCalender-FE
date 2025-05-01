@@ -2,18 +2,18 @@ import React from 'react';
 
 import { timeFrameEnum } from '../lib/enums';
 
-interface TimeFrameContextType {
+interface AuthenticatedContextType {
   timeFrame: timeFrameEnum | undefined;
   timeFrameSelector: (timeFrame: timeFrameEnum) => void;
 }
 
-const TimeFrameContext = React.createContext<TimeFrameContextType | undefined>(undefined);
+const AuthenticatedContext = React.createContext<AuthenticatedContextType | undefined>(undefined);
 
-type TimeFrameContextProviderProps = {
+type AuthenticatedContextProviderProps = {
   children: React.ReactNode;
 };
 
-const TimeFrameContextProvider = ({ children }: TimeFrameContextProviderProps) => {
+const AuthenticatedContextProvider = ({ children }: AuthenticatedContextProviderProps) => {
   const [timeFrame, setTimeFrame] = React.useState<timeFrameEnum | undefined>(undefined);
   React.useEffect(() => {
     setTimeFrame(timeFrameEnum.week);
@@ -22,18 +22,18 @@ const TimeFrameContextProvider = ({ children }: TimeFrameContextProviderProps) =
     setTimeFrame(timeFrame);
   };
   return (
-    <TimeFrameContext.Provider value={{ timeFrame, timeFrameSelector }}>
+    <AuthenticatedContext.Provider value={{ timeFrame, timeFrameSelector }}>
       {children}
-    </TimeFrameContext.Provider>
+    </AuthenticatedContext.Provider>
   );
 };
 
-const useTimeFrameContext = () => {
-  const context = React.useContext(TimeFrameContext);
+const useAuthenticatedContext = () => {
+  const context = React.useContext(AuthenticatedContext);
   if (context) {
     return context;
   }
   throw new Error('TimeFrame Context Missing');
 };
 
-export { useTimeFrameContext, TimeFrameContextProvider };
+export { useAuthenticatedContext, AuthenticatedContextProvider };
